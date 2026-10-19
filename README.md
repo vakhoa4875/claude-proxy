@@ -257,5 +257,6 @@ One JSON line per request (visible with `npx wrangler tail`):
 ```
 
 - No header values and no request or response bodies are logged.
+- When Anthropic answers with a non-2xx status, `upstream_error` holds the error's `type: message` (or the page title for an HTML error page), redacted and cut to 300 characters. The error body itself is still returned to the client unchanged.
 - On errors, an `error` field holds `ErrorName: message`, scrubbed of every credential seen on that request, plus any `Bearer …` or `sk-ant-…` pattern.
 - `observability` is disabled in `wrangler.toml`.

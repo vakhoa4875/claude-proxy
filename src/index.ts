@@ -5,7 +5,7 @@ import { RateLimiter } from "./middleware/rate-limit";
 import { checkRoute } from "./middleware/route";
 import { proxyToAnthropic } from "./services/anthropic-proxy";
 import { errorResponse, HttpError } from "./utils/errors";
-import { describeError, logRequest, Redactor, type RequestLog } from "./utils/logger";
+import { describeError, describeUpstreamError, logRequest, Redactor, type RequestLog } from "./utils/logger";
 
 export type { Env } from "./config";
 
@@ -70,6 +70,13 @@ export async function handleRequest(request: Request, env: Env, limiter: RateLim
 			if (log.outcome === "ok") {
 				log.upstream_status = response.status;
 				log.outcome = response.ok ? "ok" : "upstream_error";
+				if (!response.ok) {
+					// Error bodies are small and never streamed; read once so the
+					// reason can be logged, then return the same bytes unchanged.
+					const body = await response.text();
+					log.upstream_error = describeUpstreamError(body, redactor);
+					response = new Response(body, response);
+				}
 			}
 		}
 	} catch (error) {

@@ -53,6 +53,31 @@ export interface RequestLog {
 	upstream_status?: number;
 	outcome: string;
 	error?: string;
+	/** Short reason from a non-2xx upstream body: `type: message`, or an HTML page title. */
+	upstream_error?: string;
+}
+
+/**
+ * Condenses an upstream error body into one short, redacted line so the
+ * reason for a 4xx/5xx shows up in `wrangler tail`. Only the error type and
+ * message are kept from JSON bodies; HTML pages are reduced to their title.
+ */
+export function describeUpstreamError(body: string, redactor: Redactor): string {
+	let summary: string | undefined;
+	try {
+		const parsed = JSON.parse(body) as { error?: { type?: unknown; message?: unknown } };
+		const { type, message } = parsed.error ?? {};
+		if (typeof type === "string" || typeof message === "string") {
+			summary = [type, message].filter((part) => typeof part === "string").join(": ");
+		}
+	} catch {
+		// Not JSON; fall through.
+	}
+	if (summary === undefined) {
+		const title = /<title[^>]*>([^<]*)<\/title>/i.exec(body)?.[1];
+		summary = (title ?? body.replace(/<[^>]*>/g, " ")).replace(/\s+/g, " ").trim();
+	}
+	return redactor.redact(summary).slice(0, 300);
 }
 
 export function describeError(error: unknown, redactor: Redactor): string {

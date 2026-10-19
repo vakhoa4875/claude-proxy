@@ -169,6 +169,58 @@ describe.each([
 		expect((await call(makeRequest({ ...headers }), env, limiter)).status).toBe(200);
 	});
 
+	it("logs the upstream error type and message and returns the body unchanged", async () => {
+		const logs = captureLogs();
+		const body = JSON.stringify({
+			type: "error",
+			error: { type: "permission_error", message: "Request not allowed" },
+		});
+		mockUpstream(
+			() => new Response(body, { status: 403, headers: { "content-type": "application/json", "request-id": "req_x" } }),
+		);
+		const response = await call(makeRequest({ ...headers }), makeEnv());
+		expect(response.status).toBe(403);
+		expect(response.headers.get("request-id")).toBe("req_x");
+		expect(await response.text()).toBe(body);
+		const [record] = logs.json();
+		expect(record).toMatchObject({
+			outcome: "upstream_error",
+			upstream_status: 403,
+			upstream_error: "permission_error: Request not allowed",
+		});
+	});
+
+	it("reduces an HTML upstream error page to its title", async () => {
+		const logs = captureLogs();
+		mockUpstream(
+			() =>
+				new Response("<html><head><title>Attention Required! | Cloudflare</title></head><body>blocked</body></html>", {
+					status: 403,
+					headers: { "content-type": "text/html" },
+				}),
+		);
+		await call(makeRequest({ ...headers }), makeEnv());
+		expect(logs.json()[0]!.upstream_error).toBe("Attention Required! | Cloudflare");
+	});
+
+	it("redacts credentials echoed in an upstream error body", async () => {
+		const logs = captureLogs();
+		mockUpstream(
+			() =>
+				new Response(
+					JSON.stringify({
+						type: "error",
+						error: { type: "authentication_error", message: `bad token ${OAUTH_ACCESS_TOKEN} / ${PROXY_TOKEN}` },
+					}),
+					{ status: 401 },
+				),
+		);
+		await call(makeRequest({ ...headers }), makeEnv());
+		expect(logs.text()).not.toContain(OAUTH_ACCESS_TOKEN);
+		expect(logs.text()).not.toContain(PROXY_TOKEN);
+		expect(logs.json()[0]!.upstream_error).toContain("authentication_error");
+	});
+
 	it("logs one structured line per request with no header values", async () => {
 		const logs = captureLogs();
 		mockUpstream();
