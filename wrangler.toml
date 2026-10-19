@@ -6,6 +6,13 @@ compatibility_date = "2026-10-01"
 compatibility_flags = ["enable_request_signal"]
 workers_dev = true
 
+# Run the Worker in the US (near Anthropic's API) instead of the edge
+# closest to the client. Anthropic rejects requests egressing from
+# unsupported regions, and a US placement also shortens the upstream hop.
+[placement]
+mode = "targeted"
+region = "aws:us-east-1"
+
 [vars]
 # "oauth-passthrough": forward the claude.ai login of the Claude Code client.
 # "api-key": inject ANTHROPIC_API_KEY (the code default when unset).
