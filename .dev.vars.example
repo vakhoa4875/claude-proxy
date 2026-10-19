@@ -1,0 +1,4 @@
+# Copy to .dev.vars for `npm run dev`. Never commit .dev.vars.
+PROXY_TOKENS=replace-with-a-long-random-token
+# Only needed when AUTH_MODE=api-key:
+# ANTHROPIC_API_KEY=sk-ant-...

@@ -1,0 +1,21 @@
+name = "cc-gateway"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+# enable_request_signal: request.signal aborts when the client disconnects,
+# which cancels the upstream Anthropic request.
+compatibility_flags = ["enable_request_signal"]
+workers_dev = true
+
+[vars]
+# "oauth-passthrough": forward the claude.ai login of the Claude Code client.
+# "api-key": inject ANTHROPIC_API_KEY (the code default when unset).
+AUTH_MODE = "oauth-passthrough"
+RATE_LIMIT_PER_MINUTE = "120"
+ALLOWED_ORIGINS = ""
+
+# Secrets (never in this file):
+#   npx wrangler secret put PROXY_TOKENS        # both modes
+#   npx wrangler secret put ANTHROPIC_API_KEY   # api-key mode only
+
+[observability]
+enabled = false
