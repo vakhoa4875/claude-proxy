@@ -1,5 +1,5 @@
 {
-  "name": "cc-gateway",
+  "name": "claude-proxy",
   "version": "1.0.0",
   "private": true,
   "description": "Personal Cloudflare Worker gateway for Claude Code (Anthropic Messages API): api-key and oauth-passthrough modes",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/trangioi1999/cc-gateway.git"
+    "url": "git+https://github.com/vakhoa4875/claude-proxy.git"
   },
   "license": "MIT",
   "engines": {

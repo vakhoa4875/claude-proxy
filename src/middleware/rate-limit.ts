@@ -35,7 +35,7 @@ export class RateLimiter {
 		window.count += 1;
 		if (window.count > limitPerMinute) {
 			const retryAfter = Math.max(1, Math.ceil((window.start + WINDOW_MS - now) / 1000));
-			throw new HttpError(429, "rate_limit_error", "cc-gateway rate limit exceeded", {
+			throw new HttpError(429, "rate_limit_error", "claude-proxy rate limit exceeded", {
 				"retry-after": String(retryAfter),
 			});
 		}

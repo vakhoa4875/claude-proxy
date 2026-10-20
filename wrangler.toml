@@ -1,4 +1,4 @@
-name = "cc-gateway"
+name = "claude-proxy"
 main = "src/index.ts"
 compatibility_date = "2026-10-01"
 # enable_request_signal: request.signal aborts when the client disconnects,

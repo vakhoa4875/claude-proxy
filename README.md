@@ -1,4 +1,4 @@
-# cc-gateway
+# claude-proxy
 
 A small Cloudflare Worker that sits between Claude Code and the Anthropic Messages API. It is built for **one person's own use**.
 
@@ -67,7 +67,7 @@ npm run deploy
 Claude Code side:
 
 ```bash
-export ANTHROPIC_BASE_URL=https://cc-gateway.<subdomain>.workers.dev
+export ANTHROPIC_BASE_URL=https://claude-proxy.<subdomain>.workers.dev
 export ANTHROPIC_AUTH_TOKEN=<proxy token>   # or ANTHROPIC_API_KEY=<proxy token>
 ```
 
@@ -128,12 +128,12 @@ npm run deploy
 Smoke test without any OAuth token. You should get `401` with the message "Missing Authorization header. Log in with your claude.ai account…". That proves the Worker is deployed and accepts your `X-Proxy-Token`:
 
 ```bash
-curl -sS -w '\n%{http_code}\n' -X POST https://cc-gateway.<subdomain>.workers.dev/v1/messages \
+curl -sS -w '\n%{http_code}\n' -X POST https://claude-proxy.<subdomain>.workers.dev/v1/messages \
   -H "X-Proxy-Token: <token>" -H "content-type: application/json" -d '{}'
 ```
 
 ```powershell
-curl.exe -sS -w "`n%{http_code}`n" -X POST https://cc-gateway.<subdomain>.workers.dev/v1/messages -H "X-Proxy-Token: <token>" -H "content-type: application/json" -d "{}"
+curl.exe -sS -w "`n%{http_code}`n" -X POST https://claude-proxy.<subdomain>.workers.dev/v1/messages -H "X-Proxy-Token: <token>" -H "content-type: application/json" -d "{}"
 ```
 
 ### 2. Editor settings (same for VS Code and Kiro)
@@ -147,7 +147,7 @@ Add:
 
 ```json
 "claudeCode.environmentVariables": [
-  { "name": "ANTHROPIC_BASE_URL", "value": "https://cc-gateway.<subdomain>.workers.dev" },
+  { "name": "ANTHROPIC_BASE_URL", "value": "https://claude-proxy.<subdomain>.workers.dev" },
   { "name": "ANTHROPIC_CUSTOM_HEADERS", "value": "X-Proxy-Token: <token>" }
 ]
 ```
@@ -161,7 +161,7 @@ Then reload the window (`Ctrl+Shift+P` → **Developer: Reload Window**) and sig
 > The settings file now contains your proxy token. Don't commit it or sync it to a shared machine.
 
 > [!NOTE]
-> **Kiro:** only the Claude Code extension goes through cc-gateway. Kiro's own built-in AI features use Kiro's backend and are not affected by these settings.
+> **Kiro:** only the Claude Code extension goes through claude-proxy. Kiro's own built-in AI features use Kiro's backend and are not affected by these settings.
 
 ### 3. What goes through the Worker and what bypasses it
 

@@ -3,7 +3,7 @@ import type { Env } from "../src/config";
 import { handleRequest } from "../src/index";
 import { RateLimiter } from "../src/middleware/rate-limit";
 
-export const WORKER_URL = "https://cc-gateway.example.workers.dev";
+export const WORKER_URL = "https://claude-proxy.example.workers.dev";
 
 /** Fake values only. Long and distinctive so leaks are easy to grep for. */
 export const PROXY_TOKEN = "cgw_test_proxy_token_7f3a9c1e5b2d4f6a8c0e";

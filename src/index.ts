@@ -41,7 +41,7 @@ export async function handleRequest(request: Request, env: Env, limiter: RateLim
 			config = loadConfig(env);
 		} catch (error) {
 			if (error instanceof ConfigError) {
-				throw new HttpError(500, "api_error", `cc-gateway misconfigured: ${error.message}`);
+				throw new HttpError(500, "api_error", `claude-proxy misconfigured: ${error.message}`);
 			}
 			throw error;
 		}
@@ -87,7 +87,7 @@ export async function handleRequest(request: Request, env: Env, limiter: RateLim
 		} else {
 			log.outcome = "gateway_error";
 			log.error = describeError(error, redactor);
-			response = errorResponse(502, "api_error", "cc-gateway could not reach the Anthropic API");
+			response = errorResponse(502, "api_error", "claude-proxy could not reach the Anthropic API");
 		}
 	}
 
